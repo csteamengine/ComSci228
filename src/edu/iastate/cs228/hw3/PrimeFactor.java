@@ -18,7 +18,11 @@ public class PrimeFactor
 	 */
 	public PrimeFactor(int p, int m) throws IllegalArgumentException
 	{
-		// TODO 
+		if(m<1){
+			throw new IllegalArgumentException("Multiplicity is less than 1");
+		}
+		prime = p;
+		multiplicity = m;
 	}
 
 	@Override
@@ -34,7 +38,7 @@ public class PrimeFactor
 	@Override
 	public String toString() 
 	{
-		// TODO 
-		return null; 
+		String toString = prime + "^" + multiplicity;
+		return toString; 
 	}
 }
