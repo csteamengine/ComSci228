@@ -371,10 +371,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		 */
 		public Node()
 		{
-			//My first attempt at node class constructor --biolife
-			pFactor = null;
-			next=null;
-			previous=null;
+			//TODO
 		}
 	    
 		/**
@@ -386,8 +383,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		 */
 		public Node(int p, int m) throws IllegalArgumentException 
 		{	
-			//Biolife, creates new Pf object to fill the node
-			pFactor = new PrimeFactor(p,m);
+			//TODO 
 		}   
 		
 		/**
@@ -398,8 +394,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		 */
 		public Node(PrimeFactor pf)  
 		{
-			//How do I link the previous and next nodes if there is no constructor for it?
-			pFactor=pf; 
+			//TODO
 		}
 
 		/**
@@ -409,7 +404,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		public String toString() 
 		{
 			// TODO 
-			return pFactor.toString();
+			return pFactor.toString();	//Should be all I need to do
 		}
 
     }

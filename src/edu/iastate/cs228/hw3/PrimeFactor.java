@@ -38,7 +38,13 @@ public class PrimeFactor
 	@Override
 	public String toString() 
 	{
-		String toString = prime + "^" + multiplicity;
+		String toString ="";
+		if(multiplicity==1){
+			toString += prime;
+		}else{
+			toString += prime + "^" + multiplicity;
+		}
+		
 		return toString; 
 	}
 }
