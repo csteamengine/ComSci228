@@ -40,7 +40,11 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization() 
 	{	 
-		// TODO 
+		head = new Node(null);
+	    tail = new Node(null);
+	    head.next = tail;
+	    tail.previous = head;
+	    size = 0;
 	}
 
 	
@@ -64,7 +68,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization(PrimeFactorization pf)
 	{
-		
+		//TODO
 	}
 	
 	/**
@@ -75,7 +79,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization (PrimeFactor[] pfList)
 	{
-		
+		//TODO
 	}
 	
 	
@@ -94,7 +98,11 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
     public static boolean isPrime(long n) 
 	{
-	    // TODO 
+	    for(int i = 2; i<Math.sqrt(n);i++){
+	    	if(n%i ==0){
+	    		return false;
+	    	}
+	    }
 		return true; 
 	}   
 
@@ -277,15 +285,20 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
     public boolean add(int p, int m) 
     {
-    	// TODO 
-    	return false; 
+    	// TODO
+    	return false;
+    	
+//    	Node temp = new Node(p,m);
+//        link(tail.previous, temp);
+//        ++size;
+//        return true;
     }
 
 	    
     /**
      * Removes a prime p of multiplicity m from the list.  It starts by searching for p in the 
      * linked list.  Return if p is not found.  Otherwise, let N be the node that stores p. If 
-     * N.multiplicity > m, substract m from N.multiplicity.  Otherwise, remove the node N. 
+     * N.multiplicity > m, subtract m from N.multiplicity.  Otherwise, remove the node N. 
      * 
      * Precondition: p is a prime. 
      * 
@@ -308,8 +321,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
      */
 	public int size() 
 	{
-		// TODO
-		return 0; 
+		return size; 
 	}
 	
 	/**
@@ -320,8 +332,15 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	@Override 
 	public String toString()
 	{
-		// TODO 
-		return null; 
+		// Not sure if I did this right, but a good start.
+		//TODO
+		String text = "";
+		Node temp = head.next;
+		for(int i =0;i<size;i++){
+			text += temp.toString() + " ";
+			temp=temp.next;
+		}
+		return text; 
 	}
 
 	

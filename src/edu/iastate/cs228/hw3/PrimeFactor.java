@@ -44,7 +44,6 @@ public class PrimeFactor
 		}else{
 			toString += prime + "^" + multiplicity;
 		}
-		
 		return toString; 
 	}
 }
