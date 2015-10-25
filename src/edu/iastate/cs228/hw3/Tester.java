@@ -6,7 +6,9 @@ public class Tester {
 	public static void main(String[] args){
 		//This is my tester class for Project 3. Here I will run unofficial tests.
 		//No JUnit tests will be in this class. This is just for my personal use.
-		PrimeFactor pf = new PrimeFactor(5,6);
-		System.out.println(pf.toString());
+		PrimeFactorization pf = new PrimeFactorization();
+		PrimeFactor p = new PrimeFactor(7,1);
+		PrimeFactor p2 = new PrimeFactor(11,1);
+		
 	}
 }

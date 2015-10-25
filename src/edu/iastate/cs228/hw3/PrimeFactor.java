@@ -4,7 +4,7 @@
 
 package edu.iastate.cs228.hw3;
 
-public class PrimeFactor 
+public class PrimeFactor
 {
 	public int prime; 		 // prime factor
 	public int multiplicity; // number of times the prime factor appears in a factorization
@@ -39,6 +39,9 @@ public class PrimeFactor
 	public String toString() 
 	{
 		String toString = prime + "^" + multiplicity;
+		if(multiplicity ==1){
+			toString = "" + prime;
+		}
 		return toString; 
 	}
 }
