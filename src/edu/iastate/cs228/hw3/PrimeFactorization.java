@@ -336,26 +336,24 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
     public boolean add(int p, int m) 
     {
-    	PrimeFactorizationIterator PFI = iterator();
-    	
-    	if(size==0){
-    		PFI.add(new PrimeFactor(p,m));
-    	}
+
     	if(m>=1){
-//    		if(PFI.hasNext()){
-//    			PrimeFactor pf = PFI.cursor.pFactor;
-//    		}
-    		PrimeFactor pf = PFI.cursor.pFactor;
-    		while(PFI.hasNext()){
-    			if(pf.prime ==p){
-    				pf.multiplicity += m;
-    			}else{
-    				PFI.add(new PrimeFactor(p,m));
-    			}
-    			
-        		PFI.cursor = PFI.cursor.next;
-        		pf = PFI.next();
-        	}
+    		PrimeFactorizationIterator PFI = iterator();
+    		System.out.println(PFI.cursor == tail);
+    		System.out.println(PFI.cursor.previous == head);
+    		if(PFI.hasNext()){
+    			PrimeFactor pf = PFI.next();
+        		while(PFI.hasNext() && pf.prime <= p){
+        			pf = PFI.next();
+            	}
+        		if(pf.prime ==p){
+        			pf.multiplicity +=m;
+        		}else{
+        			PFI.add(new PrimeFactor(p,m));
+        		}
+    		}else{
+    			PFI.add(new PrimeFactor(p,m));
+    		}
     		return true;
     	}else{
     		return false;
@@ -537,21 +535,23 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
     	public PrimeFactorizationIterator()
     	{
     		cursor = head.next;
-    		pending = null;
+    		cursor.previous = head;
+    		pending = head;
     		index = 0;
     	}
 
     	@Override
     	public boolean hasNext()
     	{
-    		return cursor.next != tail && cursor != tail; 
+    		
+    		return cursor != tail; 
     	}
 
     	
     	@Override
     	public boolean hasPrevious()
     	{
-    		return cursor.previous != head && cursor != head; 
+    		return cursor != head; 
     	}
 
  
@@ -615,11 +615,10 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
     	@Override
         public void add(PrimeFactor pf) throws IllegalArgumentException 
         {
-        	if(cursor.previous !=head && pf.prime <= cursor.previous.pFactor.prime){
-        		throw new IllegalArgumentException();
-        	}else if(cursor != tail && pf.prime >= cursor.pFactor.prime){
-        		throw new IllegalArgumentException();
-        	}
+    		 if (cursor.previous != head && cursor.previous.pFactor.prime >= pf.prime)
+    		     throw new IllegalArgumentException("Illegal add: previous prime >= given prime");
+    		 if (cursor != tail && cursor.pFactor.prime <= pf.prime)
+    		     throw new IllegalArgumentException("Illegal add: next prime <= given prime");
         	index++;
         	size++;
         	Node temp = new Node(pf);
@@ -668,9 +667,9 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
      */
     private void link(Node current, Node toAdd)
     {	
-    	toAdd.next =current;
-    	toAdd.previous =current.previous;
-    	current.previous = toAdd;
+    	toAdd.next =current.next;
+    	toAdd.previous =current;
+    	current.next = toAdd;
     }
 	 
     /**
