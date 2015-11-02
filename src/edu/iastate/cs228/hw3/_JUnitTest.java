@@ -108,8 +108,8 @@ public class _JUnitTest {
 		pf.multiply(2 * 2 * 3 * 3 * 3 * 5);
 		assertEquals(3, pf.size());
 
-		pf.clearList();
-		assertEquals(0, pf.size());
+		// pf.clearList();
+		// assertEquals(0, pf.size());
 	}
 
 	@Test
@@ -140,6 +140,34 @@ public class _JUnitTest {
 		pf.dividedBy(pf);
 		assertEquals(1, pf.value());
 		assertFalse(pf.valueOverflow());
+
+		// extreme number tests
+		pf.multiply(new PrimeFactorization(new PrimeFactor[] { new PrimeFactor(2, 33333) }));
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^33333", pf.toString());
+
+		PrimeFactorization copy = new PrimeFactorization(pf);
+		pf.multiply(copy);
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^66666", pf.toString());
+
+		pf.multiply(copy);
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^99999", pf.toString());
+
+		pf.multiply(2);
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^100000", pf.toString());
+
+		pf.multiply(new PrimeFactorization(new PrimeFactor[] { new PrimeFactor(5, 99999) }));
+		pf.multiply(5);
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^100000 * 5^100000", pf.toString());
+
+		pf.multiply(new PrimeFactorization(new PrimeFactor[] { new PrimeFactor(3, 99999) }));
+		pf.multiply(3);
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^100000 * 3^100000 * 5^100000", pf.toString());
 	}
 
 	@Test
@@ -164,6 +192,24 @@ public class _JUnitTest {
 
 		pf.dividedBy(18); // unsuccessful
 		assertEquals("3^4 * 7^2 * 19^2 * 928163^2 * 1111211111^2", pf.toString());
+
+		// extreme number tests
+		pf.clearList();
+		pf.add(2, 100000);
+		pf.add(5, 100000);
+		pf.add(3, 100000);
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^100000 * 3^100000 * 5^100000", pf.toString());
+
+		pf.dividedBy(2);
+		pf.dividedBy(5);
+		pf.dividedBy(3);
+		assertTrue(pf.valueOverflow());
+		assertEquals("2^99999 * 3^99999 * 5^99999", pf.toString());
+
+		pf.dividedBy(pf);
+		assertFalse(pf.valueOverflow());
+		assertEquals(1, pf.value());
 	}
 
 	@Test
@@ -356,6 +402,21 @@ public class _JUnitTest {
 
 		iter.add(new PrimeFactor(5, 1));
 		assertEquals(160, pf.value());
+
+		pf.clearList();
+		assertEquals(1, pf.value());
+
+		pf.add(2, 1);
+		assertEquals(2, pf.value());
+
+		pf.add(3, 1);
+		assertEquals(6, pf.value());
+
+		pf.add(2, 1);
+		assertEquals(12, pf.value());
+
+		pf.add(3, 1);
+		assertEquals(36, pf.value());
 	}
 
 	@Test
@@ -386,12 +447,9 @@ public class _JUnitTest {
 		assertEquals("3^3 * 5^2 * 7^2 * 19^5", pf.toString());
 
 		pf.remove(3, 5);
-		assertEquals("3^3 * 5^2 * 7^2 * 19^5", pf.toString());
-
-		pf.remove(3, 3);
 		assertEquals("5^2 * 7^2 * 19^5", pf.toString());
 
-		pf.remove(7, 5);
+		pf.remove(3, 2);
 		assertEquals("5^2 * 7^2 * 19^5", pf.toString());
 
 		pf.remove(19, 5);
@@ -404,6 +462,22 @@ public class _JUnitTest {
 
 		iter.next();
 		iter.remove();
+		assertEquals(1, pf.value());
+
+		pf.add(2, 2);
+		pf.add(3, 2);
+		assertEquals(36, pf.value());
+
+		pf.remove(2, 1);
+		assertEquals(18, pf.value());
+
+		pf.remove(2, 1);
+		assertEquals(9, pf.value());
+
+		pf.remove(3, 1);
+		assertEquals(3, pf.value());
+
+		pf.remove(3, 1);
 		assertEquals(1, pf.value());
 	}
 

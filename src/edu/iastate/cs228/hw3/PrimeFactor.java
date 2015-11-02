@@ -44,4 +44,11 @@ public class PrimeFactor
 		}
 		return toString; 
 	}
+	 @Override
+	 public boolean equals(Object o) {
+	     if (o == null || !(o instanceof PrimeFactor))
+	          return false;
+	     PrimeFactor pf = (PrimeFactor) o;
+	     return prime == pf.prime && multiplicity == pf.multiplicity;
+	 }
 }

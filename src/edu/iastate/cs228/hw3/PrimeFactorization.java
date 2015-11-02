@@ -1,9 +1,7 @@
 package edu.iastate.cs228.hw3;
 
 /**
- *  
- * @author Gregory Steenhagen
- *
+ * @author Justin Wheeler
  */
 
 import java.util.ListIterator;
@@ -11,10 +9,17 @@ import java.util.NoSuchElementException;
 
 public class PrimeFactorization implements Iterable<PrimeFactor>
 {
+	/**
+	 * Overflow value
+	 */
 	private static final long OVERFLOW = -1;
-	private long value; 	// the factored integer 
-							// it is set to OVERFLOW when the number is greater than 2^63-1, 
-						    // the largest number representable by the type long. 
+	
+	/**
+	 * The factored integer
+	 * It is set to OVERFLOW when the number is greater than 2^63-1
+	 * (The largest number representable by the type long)
+	 */
+	private long value;
 	
 	/**
 	 * Reference to dummy node at the head.
@@ -26,12 +31,11 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	private Node tail;
 	
-	private int size;     			// number of distinct prime factors
+	/**
+	 * Size of the list (Number of distinct prime factors)
+	 */
+	private int size;
 
-
-	// ------------
-	// Constructors 
-	// ------------
 	
     /**
 	 *  Default constructor constructs an empty list to represent the number 1.
@@ -39,13 +43,15 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 *  Combined with the add() method, it can be used to create a prime factorization.  
 	 */
 	public PrimeFactorization() 
-	{	 
+	{	
+		//Sets the value and size, creates the dummy nodes, and links head and tail.
+		value = 1;
+		size = 0;
 		head = new Node();
-	    tail = new Node();
-	    head.next = tail;
-	    tail.previous = head;
-	    size = 0;
-	    value = 1;
+		tail = new Node();
+		head.next = tail;
+		tail.previous = head;
+		
 	}
 
 	
@@ -57,19 +63,26 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 * @throws IllegalArgumentException if n < 1
 	 */
 	public PrimeFactorization(long n) throws IllegalArgumentException 
-	{
+	{	
+		//Calls the default constructor and checks if N is less than 1
 		this();
-		if(n<1){
-			throw new IllegalArgumentException("N is less than 1");
+		if (n < 1){
+			throw new IllegalArgumentException("N cannot be less than 1");
 		}
-		value = n;
-		for(int i =2;i*i<=value;i++){
-			while(isPrime(i) && n%i==0){
-				this.add(i, 1);
-				n=n/i;
+
+		//Performs the actual factorization on the long.
+		for (int i = 2; i * i <= n; i++){
+			while ( isPrime(i) && n % i == 0)
+			{
+				//adds the primeFactor into the PrimeFactorization
+				add(i, 1);
+				//Divides the number by the factor 
+				n /= i;
 			}
 		}
-		if(n !=1){
+		//Once the loop is done, it checks the remainder.
+		//The remainder will either be equal to 1 or to a prime number.
+		if (n != 1){
 			add((int) n, 1);
 		}
 	}
@@ -82,14 +95,19 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization(PrimeFactorization pf)
 	{
+		//Calls Default constructor.
 		this();
-		PrimeFactorizationIterator PFI = pf.iterator();
-		while(PFI.hasNext()){
-			PrimeFactor temp = PFI.cursor.pFactor;
-			add(temp.prime, temp.multiplicity);
-			temp = PFI.next();
+		//Creates an iterator
+		PrimeFactorizationIterator pfIter = pf.iterator();
+		
+		//Goes through the given PrimeFactorization, and copies it into this.prime and this.multiplicity
+		while (pfIter.hasNext()){
+			PrimeFactor pfTemp = pfIter.cursor.pFactor;
+			add(pfTemp.prime, pfTemp.multiplicity);
+    		pfTemp = pfIter.next();
 		}
 	}
+	
 	
 	/**
 	 * Constructs a factorization from an array of prime factors.  Useful when the number is 
@@ -99,16 +117,15 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization (PrimeFactor[] pfList)
 	{
+		//Default constructor
 		this();
-	    for(int num =0;num<pfList.length;num++ ){
-	    	add(pfList[num].prime,pfList[num].multiplicity);
-	    }
+		//Goes through the array and adds the prime and multiplicity to the PrimeFactorization.
+		for (int i = 0; i < pfList.length; i++){
+			//copies the array object's prime and multiplicity 
+			add(pfList[i].prime, pfList[i].multiplicity);
+		}
 	}
-	
 
-	// --------------
-	// Primality Test
-	// --------------
 	
     /**
 	 * Test if a number is a prime or not.  Check iteratively from 2 to the largest 
@@ -120,24 +137,22 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
     public static boolean isPrime(long n) 
 	{
-    	if(n==2){
-    		return true;
-    	}else if (n%2==0 || n<2){
+    	//if number is even(non prime) or less than two(also non prime)
+    	//Also accounts for two being prime.
+    	if (n != 2 && (n%2 == 0 || n < 2)){
     		return false;
     	}
-        for(int i=2;i*i<=n;i+=1) {
-            if(n%i==0){
-                return false;
-            }
-        }
-		return true; 
+    	
+    	//Goes through every odd number besides 1 up to sqrt(n) to see if it is prime.
+    	for (int i = 2; i * i <= n; i++){
+    		if (n % i == 0){
+    			return false;
+    		}
+    	}
+    	return true;
 	}   
 
-   
-	// ---------------------------
-	// Multiplication and Division 
-	// ---------------------------
-	
+    
 	/**
 	 * Multiplies this.value with another number n.  You can do this in one loop: Factor n and 
 	 * traverse the doubly linked list in the same time. For details refer to Section 3.1 in the 
@@ -148,25 +163,28 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public void multiply(long n) throws IllegalArgumentException 
 	{
-		if (n < 1)
-		{
-			throw new IllegalArgumentException();
+		//Throws exception if n is less than 1
+		if (n < 1){
+			throw new IllegalArgumentException("N cannot be less than 1.");
 		}
 		
-		for (int temp = 2; temp * temp < n; temp++)
-		{
-			while (n % temp == 0 && isPrime(temp))
+		//Scans through all the prime numbers
+		//if it divides n then it is added to the PrimeFactorization
+		for (int i = 2; i * i < n; i++){
+			
+			
+			while (isPrime(i) && n % i == 0)	//While i is prime and n is divisible by i
 			{
-				add(temp, 1);
-				n /= temp;
+				add(i, 1);		//Adds i and the multiplicity 1 to the PrimeFactorization
+				n /= i;
 			}
 		}
 		
-		if (n != 1)
-		{
-			add((int) n, 1);
+		if (n != 1){
+			add((int) n, 1);		//Adds any remainder other than 1. as long as it is a prime.
 		}
 	}
+	
 	
 	/**
 	 * Multiplies this.value with another number in the factorization form.  Traverse both linked 
@@ -177,17 +195,18 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public void multiply(PrimeFactorization pf)
 	{
-	
-		PrimeFactorizationIterator PFI2 = pf.iterator();
-		while(PFI2.hasNext()){
-			
-			PrimeFactor temp = PFI2.cursor.pFactor;
-			add(temp.prime, temp.multiplicity);
-			temp = PFI2.next();
+		//Creates the iterator
+		PrimeFactorizationIterator pfIter = pf.iterator();
+		
+		//Adds the two arrays together essentially.
+		while (pfIter.hasNext()){
+			PrimeFactor pfTemp = pfIter.cursor.pFactor;
+			add(pfTemp.prime, pfTemp.multiplicity);
+    		pfTemp = pfIter.next();
 		}
-		updateValue();
-	
 	}
+	
+	
 	/**
 	 * Divides this.value by n.  Make updates to the list, value, size if divisible.  No update 
 	 * otherwise. Refer to Section 3.2 in the project description for details. 
@@ -199,20 +218,21 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public boolean dividedBy(long n) throws IllegalArgumentException
 	{
-		if (n <= 0)
-		{
-			throw new IllegalArgumentException();
+		//if n is negative or 0, it throws an illegal argument exception.
+		if (n <= 0){
+			throw new IllegalArgumentException("N cannot be less than or equal to 0");
 		}
 		
-		if (value != -1 && value < n)
-		{
-			return false;
-		}
 		
-		PrimeFactorization tempObject = new PrimeFactorization(n);
-		dividedBy(tempObject);
+		if (value != -1 && value < n){		//returns false if the value is less than n and if the value is not equal to -1(overflow)
+			return false;	
+		}
+		//Creates the primeFactorization of n then divides this by n
+		PrimeFactorization pfTemp = new PrimeFactorization(n);
+		dividedBy(pfTemp);
 		return true; 
 	}
+	
 	
 	/**
 	 * Division where the divisor is represented in the factorization form.  Update the linked 
@@ -226,46 +246,43 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public boolean dividedBy(PrimeFactorization pf)
 	{
-		if (value != -1 && pf.value != -1 && value < pf.value)
-		{
+		//Returns false if any of the following are true
+		if (value != -1 && pf.value != -1 && value < pf.value){
 			return false;
 		}
 		
-		if (this.equals(pf))
-		{
+		//clears the list if the two pf's are equal.
+		if (this.equals(pf)){
 			clearList();
 		}
 		
-		PrimeFactorizationIterator tempIterator = pf.iterator();
+		//Creates the iterator
+		PrimeFactorizationIterator pfIter = pf.iterator();
 		
-		while (tempIterator.hasNext())
-		{
-			PrimeFactor tempPrimeFactor = tempIterator.cursor.pFactor;
+		//Goes through the pf
+		while (pfIter.hasNext()){
+			PrimeFactor pfTemp = pfIter.cursor.pFactor;
 			
-			if (!containsPrimeFactor(tempPrimeFactor.prime))
-			{
+			//if it doesn't contain the PrimeFactor then it returns false.
+			if (!containsPrimeFactor(pfTemp.prime)){
 				return false;
 			}
 			
-			tempPrimeFactor = tempIterator.next();
+			pfTemp = pfIter.next();
 		}
 		
-		tempIterator = pf.iterator();
+		//Sets the iterator to pf now, reuses the iterator
+		pfIter = pf.iterator();
 		
-		while (tempIterator.hasNext())
-		{
-			PrimeFactor tempPrimeFactor = tempIterator.next();
-			remove(tempPrimeFactor.prime, tempPrimeFactor.multiplicity);	
+		//Removes the node.
+		while (pfIter.hasNext()){
+			PrimeFactor tempPF =pfIter.next();
+			remove(tempPF.prime, tempPF.multiplicity);	
 		}
-		
 		return true; 
 	}
 
 	
-	// -------------------------------------------------
-	// Greatest Common Divisor and Least Common Multiple 
-	// -------------------------------------------------
-
 	/**
 	 * Computes the greatest common divisor (gcd) of this.value and an integer n, and return the 
 	 * result as a PrimeFactors object.  Calls the method Euclidean() if this.value != OVERFLOW.
@@ -282,7 +299,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		return null; 
 	}
 	
-
+	
 	/**
 	  * Implements the Euclidean algorithm to compute the gcd of two natural numbers m and n. 
 	  * The algorithm is described in Section 4.1 of the project description. 
@@ -343,10 +360,6 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	}
 
 	
-	// ------------
-	// List Methods
-	// ------------
-	
 	/**
 	 * Traverses the list to determine if p is a prime factor. 
 	 * 
@@ -359,30 +372,30 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public boolean containsPrimeFactor(int p) throws IllegalArgumentException
 	{
+		//Creates the iterator
+		PrimeFactorizationIterator pfIter = iterator();
 		
-		PrimeFactorizationIterator tempIterator = iterator();
-		
-		while (tempIterator.hasNext())
-    	{
-			PrimeFactor tempPrimeFactor = tempIterator.cursor.pFactor;
-    		
-			if (tempPrimeFactor.prime == p)
-    		{
+		//Main loop. 
+		while (pfIter.hasNext()){
+			PrimeFactor pfTemp = pfIter.cursor.pFactor;
+			
+			//Checks if the pf contains the given prime Factor p
+			if (pfTemp.prime == p){
     			return true;
-    		}
-    		
-    		if (tempPrimeFactor.prime > p)
-    		{
+    		}else if (pfTemp.prime > p){		//If it passes p then it returns false because it doesn't contain p.
     			return false;
     		}
-    		
-    		tempPrimeFactor = tempIterator.next();
-    	}
-		
+			//advances the cursor
+    		pfTemp = pfIter.next();
+		}
 		return false;
 	}
 	
-	// The next two methods ought to be private but are made public for testing purpose. 
+	/*
+	 * // TODO
+	 * Make next two private
+	 */
+	
 	
 	/**
 	 * Adds a prime factor p of multiplicity m.  Search for p in the linked list.  If p is found at 
@@ -395,180 +408,186 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 * @return   true  if m >= 1
 	 *           false if m < 1   
 	 */
+    public boolean add(int p, int m) 
+    {
+    	//Creates the iterator
+		PrimeFactorizationIterator pfIter = iterator();
 	
-	 public boolean add(int p, int m) 
-	    {
-		 	if(m< 1){
-		 		return false;
-		 	}
-			PrimeFactorizationIterator tempIterator = iterator();
-		
-			while (tempIterator.hasNext())
-	    	{
-				PrimeFactor tempPrimeFactor = tempIterator.cursor.pFactor;
-	    		
-				if (tempPrimeFactor.prime == p)
-	    		{
-	    			tempPrimeFactor.multiplicity += m;
-	    			updateValue();
-	    			return true;
-	    		}
-	    		
-	    		if (tempPrimeFactor.prime > p)
-	    		{
-	    			break;
-	    		}
-	    		
-	    		tempPrimeFactor = tempIterator.next();
-	    	}
-
-	    	tempIterator.add(new PrimeFactor(p, m));
-	    	return true;
-	    }
-		
-
-	    
+		//Main loop
+		while (pfIter.hasNext()){
+			PrimeFactor pfTemp = pfIter.cursor.pFactor;
+    		
+			//increments the multiplicity if p is already present.
+			if (pfTemp.prime == p){
+    			pfTemp.multiplicity += m;
+    			updateValue();
+    			return true;
+    		}
+    		//otherwise, if it passes p, it breaks the loop and then goes on to add the PrimeFactor 
+    		if (pfTemp.prime > p){
+    			break;
+    		}
+    		pfTemp = pfIter.next();
+    	}
+		//This is if p does not already exist.
+    	pfIter.add(new PrimeFactor(p, m));
+    	return true;
+    }
+ 
+    
     /**
-     * Removes a prime p of multiplicity m from the list.  It starts by searching for p in the 
-     * linked list.  Return if p is not found.  Otherwise, let N be the node that stores p. If 
-     * N.multiplicity > m, substract m from N.multiplicity.  Otherwise, remove the node N. 
+     * Removes m from the multiplicity of a prime p on the linked list. <br>
+     * It starts by searching for p. <br>
+     * Returns false if p is not found, and true if p is found. <br>
+     * In the latter case, let N be the node that stores p. <br>
+     * If N.multiplicity > m, subtracts m from N.multiplicity. <br>
+     * If N.multiplicity <= m, removes the node N.
      * 
-     * Precondition: p is a prime. 
+     * Precondition: p is a prime.
      * 
      * @param p
      * @param m
-     * @return true on success
-     *         false when p is either not found or found at a node N but m > N.multiplicity
-     * @throws IllegalArgumentException if m < 1
+     * @return true when p is found. false when p is not found.
+     * @throws IllegalArgumentException
+     *             if m < 1
      */
+
     public boolean remove(int p, int m) throws IllegalArgumentException
     {
-    	if (m < 1)
-    	{
-    		throw new IllegalArgumentException();
+    	//if m is less than 1, throws IllegalArguementException
+    	if (m < 1){
+    		throw new IllegalArgumentException("M cannot be negative.");
     	}
 
-		if (!containsPrimeFactor(p))
-		{
+    	//if p cannot be found, returns false because the removal failed.
+		if (!containsPrimeFactor(p)){
 			return false;
 		}
 		
-		PrimeFactorizationIterator tempIterator = iterator();
+		//Creates the iterator
+		PrimeFactorizationIterator pfIter = iterator();
 		
-		while (tempIterator.hasNext())
-		{
-			PrimeFactor tempPrimeFactor = tempIterator.next();
+		//Main loop
+		while (pfIter.hasNext()){
+			PrimeFactor pfTemp = pfIter.next();
 			
-			if (tempPrimeFactor.prime == p)
-			{
-				if (tempPrimeFactor.multiplicity > m)
-				{
-					tempPrimeFactor.multiplicity -= m;
+			if (pfTemp.prime == p){
+				if (pfTemp.multiplicity > m){	//if p is found and the multiplicity is greater than m, it is decreased by the given amount.
+					pfTemp.multiplicity -= m;
 					updateValue();
 				}
-				else
-				{
-					tempIterator.remove();
+				else{
+					pfIter.remove();		//if the given amount is greater than pfTemp.multiplicity, pfTemp gets removed.
 				}
-				
 				return true;
 			}
 		}
-		
 		return false;
     }
 
-
+    
     /**
      * 
      * @return size of the list
      */
 	public int size() 
 	{
-		return size; 
+		return size;
 	}
+	
 	
 	/**
 	 * Writes out the list as a factorization in the form of a product. Represents exponentiation 
 	 * by a caret.  For example, if the number is 5814, the returned string would be printed out 
 	 * as "2 * 3^2 * 17 * 19". 
 	 */
- 
 	@Override 
 	public String toString()
 	{
-		if (size > 0)
-		{
-			PrimeFactorizationIterator tempIterator = iterator();
-			String tempString = "";
+		if (size > 0){		//if the PF is not empty, it does the following
+			PrimeFactorizationIterator pfIter = iterator();		//Iterator
+			String tempString = "";			//String to be returned
 			
-			while (tempIterator.hasNext())
-			{
-				tempString += tempIterator.next().toString();
+			while (pfIter.hasNext()){
+				tempString += pfIter.next().toString();
 				
-				if (tempIterator.hasNext())
-				{
-					tempString += " * ";
+				if (pfIter.hasNext()){
+					tempString += " * ";	//Adds the multiplication symbol into the string.
 				}
 			}
-			
 			return tempString; 
 		}
-		
-		return "1";
+		return "1";		//Only for empty strings
 	}
-	
-	// The next three methods are for testing, but you may use them as you like.  
 
+	
 	/**
 	 * @return true if this PrimeFactorization is representing a value that is too large to be within long's range. e.g. 999^999. false otherwise.
 	 */
-	public boolean valueOverflow() {
+	public boolean valueOverflow()
+	{
 		return value == OVERFLOW;
 	}
 
 	/**
 	 * @return value represented by this PrimeFactorization, or -1 if valueOverflow()
 	 */
-	public long value() {
+	public long value()
+	{
 		return value;
 	}
 
-	public PrimeFactor[] toArray() {
-		PrimeFactor[] arr = new PrimeFactor[size];
+	public PrimeFactor[] toArray()
+	{
+		PrimeFactor[] pfArr = new PrimeFactor[size];
 		int i = 0;
-		for (PrimeFactor pf : this)
-			arr[i++] = pf;
-		return arr;
+		for (PrimeFactor pf : this){
+			pfArr[i++] = pf;
+		}
+		return pfArr;
 	}
 
-
-	
 	@Override
 	public PrimeFactorizationIterator iterator()
 	{
 	    return new PrimeFactorizationIterator();
 	}
-	
+
+		
 	/**
 	 * Doubly-linked node type for this class.
 	 */
     private class Node 
     {
-		public PrimeFactor pFactor;			// prime factor 
-		public Node next;
-		public Node previous;
+	   /**
+	    * The prime factor 
+	    * Data of the Node.
+	    */
+		public PrimeFactor pFactor;
 		
 		/**
-		 * Default constructor for creating a dummy node.
+		 * neighbor to the current node in the next position
+		 */
+		public Node next;
+		
+		/**
+		 * Neighbor to the current node in the previous position
+		 */
+		public Node previous;
+		
+		
+		/**
+		 * Default constructor
+		 * creates a dummy node with null data and no previous or next
 		 */
 		public Node()
 		{
 			pFactor = null;
-			next=null;
-			previous=null;
+			next = null;
+			previous = null;
 		}
-	    
+	  
+		
 		/**
 		 * Precondition: p is a prime
 		 * 
@@ -578,13 +597,16 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		 */
 		public Node(int p, int m) throws IllegalArgumentException 
 		{	
-			if(m<1){
-				throw new IllegalArgumentException();
+			//Thrown if m < 1
+			if (m < 1){
+				throw new IllegalArgumentException("M cannot be less than 1");
 			}
-			pFactor = new PrimeFactor(p,m);
+			
+			pFactor = new PrimeFactor(p, m); //Creates a primeFactor object with the given prime and multiplicity
 			next = null;
 			previous = null;
 		}   
+		
 		
 		/**
 		 * Constructs a node over a provided PrimeFactor object. 
@@ -594,11 +616,13 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		 */
 		public Node(PrimeFactor pf)  
 		{
-			pFactor=new PrimeFactor(pf.prime, pf.multiplicity);
+			//Creates the node over the given PF... May need to use the reference, rather than the copy.
+			pFactor = new PrimeFactor(pf.prime, pf.multiplicity);
 			next = null;
 			previous = null;
 		}
 
+		
 		/**
 		 * Printed out in the form: prime + "^" + multiplicity.  For instance "2^3". 
 		 */
@@ -607,7 +631,6 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 		{
 			return pFactor.toString();
 		}
-
     }
 
     
@@ -623,9 +646,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
         private Node pending;    // node pending for removal
         private int index;      
   	  
-    	// other instance variables ... 
-    	  
-      
+        
         /**
     	 * Default constructor positions the cursor before the smallest prime factor.
     	 */
@@ -636,48 +657,51 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
     		index = 0;
     	}
 
+    	
     	@Override
     	public boolean hasNext()
     	{
-    		
-    		return index < size; 
+    		return index < size;	//returns whether the end has been reached or not.
     	}
 
     	
     	@Override
-    	public boolean hasPrevious()
+    	public boolean hasPrevious()	//returns whether there is a previous node or not.
     	{
-    		return index > 0; 
+    		return index > 0;
     	}
 
- 
+    	
     	@Override 
     	public PrimeFactor next() 
     	{
-    		if (!hasNext())
-    		{
-    			throw new NoSuchElementException();
+    		//check if you can proceed forward again or not.
+    		if (!hasNext()){
+    			throw new NoSuchElementException("Can't go forward any more, you are at tail.");
     		}
     		
-    		PrimeFactor tempPrimeFactor = cursor.pFactor;
+    		PrimeFactor pfTemp = cursor.pFactor;	//saves the cursors pFactor to be returned
     		pending = cursor;
     		cursor = cursor.next;
     		index++;
     		
-    		return tempPrimeFactor; 
+    		return pfTemp; 
     	}
 
  
     	@Override 
     	public PrimeFactor previous() 
     	{
-    		if(!hasPrevious()){
-    			throw new NoSuchElementException();
+    		//if you are at head, you can't move back any further.
+    		if (!hasPrevious()){
+    			throw new NoSuchElementException("Can't move back any more, you are at head.");
     		}
+    		
     		cursor = cursor.previous;
-            index--;
-            pending = cursor;
-            return cursor.pFactor;
+    		pending = cursor;
+    		index--;	
+    		
+    		return cursor.pFactor; 
     	}
 
    
@@ -689,19 +713,18 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
     	@Override
     	public void remove() throws IllegalStateException
     	{
-    		if(pending == null){
-    			throw new IllegalStateException("Pending is null");
+    		//Checks if pending is null, if so, it cannot be removed
+    		if (pending == null){
+    			throw new IllegalStateException("Pending node is null, Cannot be removed");
     		}
-
+    		
+    		//unlinks pending if it is non-null
     		unlink(pending);
-            Node pendingNext = pending.next;
 
-            if (cursor == pending)
-            {
-            	cursor = pendingNext;
+            if (cursor == pending){
+            	cursor = pending.next;	
             }
-            else
-            {
+            else{
             	index--;
             }
             
@@ -727,18 +750,19 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
     	 */
     	@Override
         public void add(PrimeFactor pf) throws IllegalArgumentException 
-        {
-    		if ((cursor.previous != head && cursor.previous.pFactor.prime >= pf.prime) || (cursor != tail && cursor.pFactor.prime <= pf.prime))
-			{
-				throw new IllegalArgumentException();
+        {	
+    		//Makes sure the cursor is in the right position.
+			if ((cursor.previous != head && cursor.previous.pFactor.prime >= pf.prime) || (cursor != tail && cursor.pFactor.prime <= pf.prime)){
+				throw new IllegalArgumentException("Cannot add a node in the current cursor position.");
 			}
     		
+			//Links the cursor and the given pf
 			link(cursor, new Node(pf));
+			//updates the size, index, pending, and value
             size++;
             index++;
             pending = null;
             updateValue();
-        	
         }
 
 
@@ -755,51 +779,44 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 			return index - 1;
 		}
 
+    	
 		@Deprecated
 		@Override
 		public void set(PrimeFactor pf) 
 		{
 			throw new UnsupportedOperationException(getClass().getSimpleName() + " does not support set method");
 		}
-        
-    	// Other methods you may want to add or override that could possibly facilitate 
-    	// other operations, for instance, addition, access to the previous element, etc.
-    	// 
-    	// ...
-    	// 
     }
+    
 
-    
-    // --------------
-    // Helper methods 
-    // -------------- 
-    
     /**
      * Inserts toAdd into the list after current without updating size.
      * 
      * Precondition: current != null, toAdd != null
      */
     private void link(Node current, Node toAdd)
-    {	
-    	Node tempPrevious = current.previous;	
-        tempPrevious.next = toAdd;
-        toAdd.next = current;
-        current.previous = toAdd;
-        toAdd.previous = tempPrevious;
+    {
+    	//links the toAdd node in front of the current node.
+    	//Changes all the references.
+    	toAdd.next = current;
+    	toAdd.previous = current.previous;
+    	current.previous.next = toAdd;
+    	current.previous = toAdd;
     }
 	 
+    
     /**
      * Removes toRemove from the list without updating size.
      */
     private void unlink(Node toRemove)
     {
-    	Node toRemovePrevious = toRemove.previous;
-        Node toRemoveNext = toRemove.next;
-        toRemovePrevious.next = toRemoveNext;
-        toRemoveNext.previous = toRemovePrevious;
+    	//Unlinks the node in question. 
+    	//Connects the nodes on either side of toRemove, together.
+        toRemove.previous.next = toRemove.next;
+        toRemove.next.previous = toRemove.previous;
     }
 
-
+    
     /**
 	  * Remove all the nodes in the linked list except the two dummy nodes. 
 	  * 
@@ -807,11 +824,13 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	  */
 	public void clearList()
 	{
-		head.next = tail;
-		tail.previous = head;
+		//Links the head and the tail and updates value and size.
 		value = 1;
 		size = 0;
+		tail.previous = head;
+		head.next = tail;
 	}	
+	
 	
 	/**
 	 * Multiply the prime factors (with multiplicities) out to obtain the represented integer.  
@@ -821,33 +840,27 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	private void updateValue()
 	{
-		try
-		{	
-			if (size == 0)
-			{
-				value = 1;
+		//Tries to update the value
+		try{	
+			if (size == 0){
+				value = 1;		//Default value for an empty pf
 			}
-			else
-			{
-				PrimeFactorizationIterator tempIterator = iterator();
-				long tempValue = 1;
+			else{
+				PrimeFactorizationIterator pfIter = iterator();	//Creates an iterator 
+				long temp = 1;
 				
-				while (tempIterator.hasNext())
-				{
-					PrimeFactor tempPrimeFactor = tempIterator.cursor.pFactor;
-					
-					for(int num = 0;num<tempPrimeFactor.multiplicity;num++){
-						tempValue = Math.multiplyExact(tempValue, tempPrimeFactor.prime);
+				//Goes through the PrimeFactorization, and multiplies it out to get the value.
+				while (pfIter.hasNext()){	
+					PrimeFactor pfTemp = pfIter.cursor.pFactor;
+					for(int i = 0;i< pfTemp.multiplicity;i++){
+						temp = Math.multiplyExact(temp, pfTemp.prime);	//uses the multiplyExact as assigned
 					}
-					
-		    		tempPrimeFactor = tempIterator.next();
+		    		pfTemp = pfIter.next(); 	//Advances the cursor
 				}
-			
-				value = tempValue;
+				value = temp;
 			}
 		} 	
-		catch (ArithmeticException e) 
-		{
+		catch (ArithmeticException e) {		//If the value overflows, value is set to OVERFLOW, which is -1;
 			value = OVERFLOW;
 		}
 	}
