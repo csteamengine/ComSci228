@@ -295,8 +295,15 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization gcd(long n) throws IllegalArgumentException 
 	{
-		// TODO 
-		return null; 
+		if(n< 1){
+			throw new IllegalArgumentException("N cannot be less than 1");
+		}
+		long gcd =1;
+		if(this.value != OVERFLOW){
+			gcd = Euclidean(this.value, n);
+		}
+		PrimeFactorization pfGCD = new PrimeFactorization(gcd);
+		return pfGCD; 
 	}
 	
 	
@@ -311,8 +318,17 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	  */
  	public static long Euclidean(long m, long n) throws IllegalArgumentException
 	{
- 		// TODO 
- 		return 0; 
+ 		if(m < 1 || n < 1){
+ 			throw new IllegalArgumentException("M and N cannot be less than 1");
+ 		}
+ 		long gcd =m;
+ 		while(m%n!=0){
+ 			gcd = m%n;
+ 			m=n;
+ 			n=gcd;
+ 		}
+ 		
+ 		return gcd; 
 	}
 
  	
@@ -326,8 +342,31 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization gcd(PrimeFactorization pf)
 	{
-		// TODO 
-		return null; 
+		
+		PrimeFactorization GCD = new PrimeFactorization();
+		PrimeFactorizationIterator thisIter = this.iterator();
+		PrimeFactorizationIterator pfIter = pf.iterator();
+		while(thisIter.hasNext() && pfIter.hasNext()){
+			PrimeFactor pfThis = thisIter.cursor.pFactor;
+			PrimeFactor pfOther = pfIter.cursor.pFactor;
+			if(pfThis.prime == pfOther.prime){
+				if(pfThis.multiplicity < pfOther.multiplicity){
+					GCD.add(pfThis.prime,pfThis.multiplicity);
+				}else{
+					GCD.add(pfOther.prime,pfOther.multiplicity);
+				}
+				pfThis = thisIter.next();
+				pfOther = pfIter.next();
+			}else if(pfThis.prime > pfOther.prime){
+				pfOther = pfIter.next();
+			}else{
+				pfThis = thisIter.next();
+			}
+		}
+		if(this.value == -1 || pf.value == -1){
+			GCD.updateValue();
+		}
+		return GCD; 
 	}
 	
 	
@@ -340,8 +379,44 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization lcm(PrimeFactorization pf)
 	{
-		// TODO 
-		return null; 
+		PrimeFactorization LCM = new PrimeFactorization();
+		PrimeFactorizationIterator thisIter = this.iterator();
+		PrimeFactorizationIterator pfIter = pf.iterator();
+		while(thisIter.hasNext() && pfIter.hasNext()){
+			PrimeFactor pfThis = thisIter.cursor.pFactor;
+			PrimeFactor pfOther = pfIter.cursor.pFactor;
+			if(pfThis.prime == pfOther.prime){
+				if(pfThis.multiplicity < pfOther.multiplicity){
+					LCM.add(pfOther.prime, pfOther.multiplicity);
+				}else{
+					LCM.add(pfThis.prime,pfThis.multiplicity);
+				}
+				pfThis = thisIter.next();
+				pfOther = pfIter.next();
+			}else if(pfThis.prime < pfOther.prime ){
+				LCM.add(pfThis.prime, pfThis.multiplicity);
+				pfThis = thisIter.next();
+			}else{
+				LCM.add(pfOther.prime, pfOther.multiplicity);
+				pfOther = pfIter.next();
+			}
+		}
+		PrimeFactor pfThis = thisIter.cursor.pFactor;
+		PrimeFactor pfOther = pfIter.cursor.pFactor;
+		while(thisIter.hasNext()){
+			LCM.add(pfThis.prime, pfThis.multiplicity);
+			thisIter.next();
+		}
+		while(pfIter.hasNext()){
+			LCM.add(pfOther.prime, pfOther.multiplicity);
+			pfIter.next();
+		}
+		if(this.value == -1 && pf.value== -1){
+			LCM.value=OVERFLOW;
+		}else{
+			LCM.updateValue();
+		}
+		return LCM; 
 	}
 
 	
@@ -355,8 +430,9 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 	 */
 	public PrimeFactorization lcm(long n) throws IllegalArgumentException 
 	{
-		// TODO 
-		return null; 
+		PrimeFactorization pfN = new PrimeFactorization(n);
+		PrimeFactorization LCM = this.lcm(pfN);
+		return LCM; 
 	}
 
 	
@@ -853,7 +929,7 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 				while (pfIter.hasNext()){	
 					PrimeFactor pfTemp = pfIter.cursor.pFactor;
 					for(int i = 0;i< pfTemp.multiplicity;i++){
-						temp = Math.multiplyExact(temp, pfTemp.prime);	//uses the multiplyExact as assigned
+						temp = multiplyExact(temp, pfTemp.prime);	//uses the multiplyExact as assigned
 					}
 		    		pfTemp = pfIter.next(); 	//Advances the cursor
 				}
@@ -864,4 +940,10 @@ public class PrimeFactorization implements Iterable<PrimeFactor>
 			value = OVERFLOW;
 		}
 	}
+	private long multiplyExact(long x, long y) {
+	     if (Long.MAX_VALUE / x < y)
+	         throw new ArithmeticException();
+	     else
+	         return x * y;
+	 }
 }
