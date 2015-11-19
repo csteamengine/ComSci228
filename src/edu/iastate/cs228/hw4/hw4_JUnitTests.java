@@ -44,8 +44,11 @@ public class hw4_JUnitTests {
 		assertEquals(leftPar.compareTo(rightPar), -1);
 		
 	}
-	public void testInfixExpression(){
-		
+	public void testInfixExpression() throws ExpressionFormatException{
+		//Testing toPostfix
+		InfixExpression IE = new InfixExpression("(2+3) * 5");
+		IE.postfix();
+		assertEquals(IE.postfixExpression, "2 3 + 5 *");
 	}
 	public void testPostfixExpression(){
 		

@@ -7,6 +7,7 @@ package edu.iastate.cs228.hw4;
  */
 
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * 
@@ -32,7 +33,8 @@ public class InfixExpression extends Expression
 	 */
 	public InfixExpression (String st, HashMap<Character, Integer> varTbl)
 	{
-		// TODO
+		super(st,varTbl);
+		infixExpression = removeExtraSpaces(st);
 	}
 	
 
@@ -43,7 +45,8 @@ public class InfixExpression extends Expression
 	 */
 	public InfixExpression (String s)
 	{
-		// TODO  
+		super(s);
+		infixExpression = removeExtraSpaces(s);
 	}
 	
 
@@ -52,11 +55,9 @@ public class InfixExpression extends Expression
 	 * It first calls the method toStringHelper() from the class Expression.  
 	 */
 	@Override
-	public String toString()
-	{
-		// TODO  
-		return null; 
-	}
+	public String toString() {
+	     return infixExpression.replace("( ", "(").replace(" )", ")");
+	 }
 	
 	
 	/** 
@@ -67,8 +68,7 @@ public class InfixExpression extends Expression
 	 */
 	public String postfixString() 
 	{
-		// TODO
-		return null; 
+		return postfixExpression; 
 	}
 
 
@@ -101,7 +101,7 @@ public class InfixExpression extends Expression
      *  
      *      -- "Operator expected" if the cumulative rank goes above 1;
      *      -- "Operand expected" if the rank goes below 0; 
-     *      -- "Missing '('" if scanning a ‘)’ results in popping the stack empty with no '(';
+     *      -- "Missing '('" if scanning a ï¿½)ï¿½ results in popping the stack empty with no '(';
      *      -- "Missing ')'" if a '(' is left unmatched on the stack at the end of the scan; 
      *      -- "Invalid character" if a scanned char is neither a digit nor an operator; 
      *   
@@ -111,7 +111,34 @@ public class InfixExpression extends Expression
 	 */
 	public void postfix() throws ExpressionFormatException
 	{
-		 // TODO 
+		int rank = 0;
+		String temp = "";
+		operatorStack = new ArrayBasedStack<Operator>();
+		Scanner scanner = new Scanner(infixExpression);
+		//Scans through and makes sure the rank never goes above 1 or below -1.
+		while(scanner.hasNext()){
+			if(scanner.hasNextInt()){
+				rank +=1;
+				temp += scanner.nextInt();
+			}else if(isVariable(scanner.next().charAt(0))){
+				temp += scanner.next();
+				rank +=1;
+			}else if(isOperator(scanner.next().charAt(0))){
+				rank-=1;
+			}else if(scanner.next() == "("){
+				rank+=0;
+			}else{
+				throw new ExpressionFormatException("Invalid Character");
+			}
+			//Throws any needed Errors related to rank.
+			if(rank > 1){
+				throw new ExpressionFormatException("Operator Expected");
+			}else if(rank < -1){
+				throw new ExpressionFormatException("Operand Expected");
+			}
+		}
+
+		postfixExpression = temp;
 	}
 	
 	

@@ -42,7 +42,6 @@ public class Operator implements Comparable<Operator>
 		if(operator == '+' || operator == '-'){
 			inputPrecedence =1;
 			stackPrecedence =1;
-			
 		}else if( operator =='*' || operator == '/' || operator =='%'){
 			inputPrecedence =2;
 			stackPrecedence = 2;

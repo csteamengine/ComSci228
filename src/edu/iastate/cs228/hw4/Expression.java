@@ -1,6 +1,7 @@
 package edu.iastate.cs228.hw4;
 
 import java.util.HashMap;
+import java.util.Scanner;
 
 public abstract class Expression 
 {
@@ -22,7 +23,7 @@ public abstract class Expression
 	 */
 	protected Expression(String st, HashMap<Character, Integer> varTbl)
 	{
-		// TODO 
+		this.varTable = varTable;
 	}
 	
 	/**
@@ -32,16 +33,15 @@ public abstract class Expression
 	 */
 	protected Expression(String st) 
 	{
-		// TODO 
+		varTable = new HashMap<Character, Integer>();
 	}
 
 	/**
-	 * Useful with the d
 	 * @param varTbl
 	 */
 	public void setVarTable(HashMap<Character, Integer> varTbl) 
 	{
-		// TODO 
+		varTable = varTbl;
 	}
 	
 	/**
@@ -67,8 +67,12 @@ public abstract class Expression
 	 */
 	protected static boolean isInt(String s) 
 	{
-		// TODO 
-		return false; 
+		try{
+			int temp = Integer.parseInt(s);
+		}catch (NumberFormatException e){
+			return false;
+		}
+		return true;
 	}
 
 	
@@ -80,7 +84,9 @@ public abstract class Expression
 	 */
 	protected static boolean isOperator(char c) 
 	{
-		// TODO 
+		if(c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '(' || c == ')'){
+			return true;
+		}
 		return false; 
 	}
 
@@ -92,7 +98,12 @@ public abstract class Expression
 	 */
 	protected static boolean isVariable(char c) 
 	{
-		// TODO 
+		if((int) c >= 97 && (int) c <=122){		//'a'= 97, 'z'= 122, all lower-case chars must be between that.
+			return true;
+		}
 		return false;
 	}	
+	protected static String removeExtraSpaces(String s) {
+	     return s.replaceAll("\\s+", " ").trim();
+	 }
 }

@@ -31,7 +31,8 @@ public class PostfixExpression extends Expression
 	 */
 	public PostfixExpression (String st, HashMap<Character, Integer> varTbl)
 	{
-		// TODO
+		super(st,varTbl);
+		postfixExpression= st;
 	}
 	
 	
@@ -42,7 +43,8 @@ public class PostfixExpression extends Expression
 	 */
 	public PostfixExpression (String s)
 	{
-		// TODO 
+		super(s);
+		postfixExpression= s;
 	}
 
 	
@@ -53,8 +55,7 @@ public class PostfixExpression extends Expression
 	@Override 
 	public String toString()
 	{
-		// TODO 
-		return null; 
+		return postfixExpression.replaceAll("\\s+", " ").trim();
 	}
 	
 
@@ -107,20 +108,48 @@ public class PostfixExpression extends Expression
      * throws NoSuchElementException.  
      */
 	private void getOperands() throws NoSuchElementException 
-	{
-		// TODO 
+	{	
+		if(operandStack.size()<2){
+			throw new NoSuchElementException("Stack has less than two operands");
+		}
+		leftOperand = operandStack.pop();
+		rightOperand = operandStack.pop();
 	}
 
 
 	/**
-	 * Computes "leftOperand op rightOprand". 
+	 * Computes "leftOperand op rightOperand". 
 	 * 
 	 * @param op operator that acts on leftOperand and rightOperand. 
 	 * @return
 	 */
-	private int compute(char op)  
+	public int compute(char op)  
 	{
-		// TODO 
-		return 0;  // TO MODIFY 
+		int sum = 0;
+		switch (op) {
+        case '+':
+            sum = leftOperand + rightOperand;
+            break;
+        case '-':
+        	sum = leftOperand - rightOperand;
+        	break;
+        case '*':
+        	sum = leftOperand * rightOperand;
+        	break;
+        case '/':
+        	sum = leftOperand / rightOperand;
+        	break;
+        case '%':
+        	sum = leftOperand % rightOperand;
+        	break;
+        case '^':
+        	sum = leftOperand ^ rightOperand;
+        	break;
+        default: 
+            sum = 0;
+            break;
+		}
+		return sum;
 	}
+	
 }
