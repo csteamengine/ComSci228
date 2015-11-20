@@ -66,9 +66,10 @@ public class Operator implements Comparable<Operator>
 	@Override
 	public int compareTo(Operator op)
 	{ 	
-		if(stackPrecedence > op.stackPrecedence){
+
+		if(stackPrecedence > op.inputPrecedence){
 			return 1;
-		}else if(stackPrecedence == op.stackPrecedence){
+		}else if(stackPrecedence == op.inputPrecedence){
 			return 0;
 		}else{
 			return -1;

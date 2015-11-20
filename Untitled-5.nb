@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     17011,        376]
-NotebookOptionsPosition[     16192,        346]
-NotebookOutlinePosition[     16546,        362]
-CellTagsIndexPosition[     16503,        359]
+NotebookDataLength[     16944,        371]
+NotebookOptionsPosition[     16158,        343]
+NotebookOutlinePosition[     16512,        359]
+CellTagsIndexPosition[     16469,        356]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -318,8 +318,6 @@ GOGPJo8OcMUvHEDFP9jjUI8mDwMwf+EyHyYPi2dc7keXRzcHI77g8gA7gEAP
    3.6536530919288054`*^9, 3.653655939208962*^9}]
 }, Open  ]],
 
-Cell[CellGroupData[{
-
 Cell[BoxData["\"\</Users/Charlie/Documents/Charlie School/Sophomore Year/Com. \
 S. 227/workspace/ComSci228/insert.txt\>\""], "Input",
  CellChangeTimes->{3.653653082086762*^9}],
@@ -335,8 +333,7 @@ S. 227/workspace/ComSci228/insert.txt\"\>"], "Output",
    3.6536516941896343`*^9, 3.653651703398569*^9}, 3.653651749987042*^9, 
    3.653651813782517*^9, {3.653652199615806*^9, 3.653652221567935*^9}, 
    3.6536523434363813`*^9, 3.653652482695334*^9, 3.653653045218075*^9, 
-   3.653653082165697*^9}]
-}, Open  ]],
+   3.653653082165697*^9}],
 
 Cell[BoxData[
  RowBox[{"SystemOpen", "[", 
@@ -373,14 +370,11 @@ Cell[10931, 235, 1341, 26, 339, "Output"],
 Cell[12275, 263, 1341, 26, 339, "Output"],
 Cell[13619, 291, 1342, 26, 373, "Output"]
 }, Open  ]],
-Cell[CellGroupData[{
-Cell[14998, 322, 175, 2, 46, InheritFromParent],
-Cell[15176, 326, 815, 11, 46, "Output"]
-}, Open  ]],
-Cell[16006, 340, 182, 4, 63, "Input"]
+Cell[14976, 320, 175, 2, 46, InheritFromParent],
+Cell[15154, 324, 815, 11, 46, "Output"],
+Cell[15972, 337, 182, 4, 63, "Input"]
 }
 ]
 *)
 
 (* End of internal cache information *)
-

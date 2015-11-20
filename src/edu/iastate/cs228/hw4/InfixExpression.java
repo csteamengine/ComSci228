@@ -68,7 +68,14 @@ public class InfixExpression extends Expression
 	 */
 	public String postfixString() 
 	{
-		return postfixExpression; 
+		try{
+			if(postfixReady == false){
+				postfix();
+			}
+			return postfixExpression;
+		}catch (Exception e){
+			return null;
+		}
 	}
 
 
@@ -111,34 +118,62 @@ public class InfixExpression extends Expression
 	 */
 	public void postfix() throws ExpressionFormatException
 	{
-		int rank = 0;
-		String temp = "";
-		operatorStack = new ArrayBasedStack<Operator>();
-		Scanner scanner = new Scanner(infixExpression);
-		//Scans through and makes sure the rank never goes above 1 or below -1.
-		while(scanner.hasNext()){
-			if(scanner.hasNextInt()){
-				rank +=1;
-				temp += scanner.nextInt();
-			}else if(isVariable(scanner.next().charAt(0))){
-				temp += scanner.next();
-				rank +=1;
-			}else if(isOperator(scanner.next().charAt(0))){
-				rank-=1;
-			}else if(scanner.next() == "("){
-				rank+=0;
-			}else{
-				throw new ExpressionFormatException("Invalid Character");
-			}
-			//Throws any needed Errors related to rank.
-			if(rank > 1){
-				throw new ExpressionFormatException("Operator Expected");
-			}else if(rank < -1){
-				throw new ExpressionFormatException("Operand Expected");
-			}
-		}
+		if (postfixReady == false){
+			Scanner scanner = new Scanner(infixExpression);
+			operatorStack = new ArrayBasedStack<Operator>();
+			int rank = 0;
+			while (scanner.hasNext()){
+				String s = scanner.next();
+				
+				
+				
+				if (isInt(s) || isVariable(s.charAt(0))){
+					postfixExpression += s + " ";
+					rank+=1;
+				}else if(isOperator(s.charAt(0))){
+					Operator op = new Operator(s.charAt(0));
+					if(s.charAt(0) != ')' && s.charAt(0) != '('){
+						rank -=1;
+					}
+					if (operatorStack.isEmpty()){
+						operatorStack.push(op);
+					}
+					else{
 
-		postfixExpression = temp;
+						if (operatorStack.peek().compareTo(op) == -1){
+							operatorStack.push(op);
+						}
+						else{
+							outputHigherOrEqual(op);
+							
+							if (op.operator != ')'){
+								operatorStack.push(op);
+							}
+						}
+					}
+				}else{
+					throw new ExpressionFormatException("Invalid Character");
+				}
+				if (rank < 0){
+					throw new ExpressionFormatException("Operand expected");
+				}else if (rank >1){
+					throw new ExpressionFormatException("Operator expected");
+				}
+			}
+			
+			while (!operatorStack.isEmpty()){
+				if (operatorStack.peek().operator == '('){
+					throw new ExpressionFormatException("Missing ')'");
+				}
+				postfixExpression += operatorStack.pop().operator + " ";
+			}
+			
+			scanner.close();
+		}
+		postfixExpression = postfixExpression.replaceAll("\\s+$", "");
+		postfixReady = true;
+		
+
 	}
 	
 	
@@ -150,11 +185,13 @@ public class InfixExpression extends Expression
 	 * 
 	 * @return value of the infix expression 
 	 * @throws ExpressionFormatException, UnassignedVariableException
+	 * @throws UnassignedVariableException 
 	 */
-	public int evaluate()  
+	public int evaluate() throws ExpressionFormatException, UnassignedVariableException  
     {
-    	// TODO 
-		return 0;  
+    	postfix();
+    	PostfixExpression pfE = new PostfixExpression(postfixExpression,varTable);
+		return pfE.evaluate();  
     }
 
 
@@ -167,10 +204,19 @@ public class InfixExpression extends Expression
 	 * not write it to postfixExpression. 
 	 * 
 	 * @param op  current operator
+	 * @throws ExpressionFormatException 
 	 */
-	private void outputHigherOrEqual(Operator op)
+	private void outputHigherOrEqual(Operator op) throws ExpressionFormatException
 	{
-		// TODO 
+		while (!operatorStack.isEmpty() && operatorStack.peek().compareTo(op) >= 0){
+			postfixExpression += operatorStack.pop().operator + " ";
+		}
+
+		if (!operatorStack.isEmpty() && op.getOp() == ')' && operatorStack.peek().getOp() == '('){
+			operatorStack.pop();
+		}else if (op.getOp() == ')'){
+			throw new ExpressionFormatException("Missing '('");
+		}
 	}
 	
 	// other helper methods if needed

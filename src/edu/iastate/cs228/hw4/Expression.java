@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public abstract class Expression 
 {
-	protected String postfixExpression; 		
+	protected String postfixExpression = ""; 		
 	protected HashMap<Character, Integer> varTable; // hash map to store variables in the 
 
 	
@@ -23,7 +23,7 @@ public abstract class Expression
 	 */
 	protected Expression(String st, HashMap<Character, Integer> varTbl)
 	{
-		this.varTable = varTable;
+		setVarTable(varTbl);
 	}
 	
 	/**

@@ -14,6 +14,7 @@ package edu.iastate.cs228.hw4;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException; 
+import java.util.Scanner;
 
 public class PostfixExpression extends Expression 
 {
@@ -32,7 +33,7 @@ public class PostfixExpression extends Expression
 	public PostfixExpression (String st, HashMap<Character, Integer> varTbl)
 	{
 		super(st,varTbl);
-		postfixExpression= st;
+		postfixExpression= removeExtraSpaces(st);
 	}
 	
 	
@@ -44,7 +45,7 @@ public class PostfixExpression extends Expression
 	public PostfixExpression (String s)
 	{
 		super(s);
-		postfixExpression= s;
+		postfixExpression= removeExtraSpaces(s);
 	}
 
 	
@@ -55,7 +56,7 @@ public class PostfixExpression extends Expression
 	@Override 
 	public String toString()
 	{
-		return postfixExpression.replaceAll("\\s+", " ").trim();
+		return postfixExpression.replace("( ", "(").replace(" )", ")");
 	}
 	
 
@@ -79,6 +80,7 @@ public class PostfixExpression extends Expression
      *       the evaluation. 
      *       
      * @return value of the postfix expression 
+	 * @throws UnassignedVariableException 
      * @throws ExpressionFormatException with one of the messages below: 
      *  
      *           -- "Invalid character" if encountering a character that is not a digit, an operator
@@ -95,10 +97,37 @@ public class PostfixExpression extends Expression
      *           -- "Variable <name> was not assigned a value", where <name> is the name of the variable.  
      *           
      */
-	public int evaluate() 
-    {
-    	// TODO 
-		return 0;  
+	public int evaluate() throws UnassignedVariableException, ExpressionFormatException 
+    { 
+		operandStack = new ArrayBasedStack<Integer>();
+		Scanner scanner = new Scanner(postfixExpression);
+		while(scanner.hasNext()){
+			String s = scanner.next();
+			if(isInt(s)){
+				operandStack.push(Integer.parseInt(s));
+			}else if(isVariable(s.charAt(0))){
+				if(varTable.get(s.charAt(0)) == null){
+					scanner.close();
+					throw new UnassignedVariableException("Variable " + s + " was not assigned a value");
+				}
+				operandStack.push(varTable.get(s.charAt(0)));
+				
+			}else if(isOperator(s.charAt(0))){
+				getOperands();
+				operandStack.push(compute(s.charAt(0)));
+				
+			}else{
+				scanner.close();
+				throw new ExpressionFormatException("Invalid Character");
+			}
+		}
+		int result = operandStack.pop();
+		if(!operandStack.isEmpty()){
+			scanner.close();
+			throw new ExpressionFormatException("Too Many Operands");
+		}
+		scanner.close();
+		return result;  
     }
 	
 
@@ -112,8 +141,8 @@ public class PostfixExpression extends Expression
 		if(operandStack.size()<2){
 			throw new NoSuchElementException("Stack has less than two operands");
 		}
-		leftOperand = operandStack.pop();
 		rightOperand = operandStack.pop();
+		leftOperand = operandStack.pop();
 	}
 
 
@@ -143,7 +172,7 @@ public class PostfixExpression extends Expression
         	sum = leftOperand % rightOperand;
         	break;
         case '^':
-        	sum = leftOperand ^ rightOperand;
+        	sum = (int) Math.pow((double) leftOperand, (double) rightOperand) ;
         	break;
         default: 
             sum = 0;
